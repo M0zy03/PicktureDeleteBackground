@@ -10,7 +10,8 @@ from aiogram.enums import ContentType
 from rembg import remove, new_session
 from PIL import Image
 
-API_TOKEN = "8252659564:AAHfCRKflAYTaLaOZ51pw0WXUmSrkWq--s0"
+import os
+API_TOKEN = os.getenv("BOT_TOKEN")
 
 logging.basicConfig(level=logging.INFO)
 
@@ -20,7 +21,8 @@ dp = Dispatcher()
 MAX_SIZE = 20 * 1024 * 1024  # 20MB
 
 # ⚡ быстрая и качественная модель
-session = new_session("u2net")
+# убираем кастомную сессию, чтобы Railway не пытался грузить модель на старте
+session = None
 
 
 # ---------- Уменьшаем гигантские фото (ускоряет работу) ----------
@@ -36,7 +38,7 @@ def resize_if_large(data: bytes, max_side=2000) -> bytes:
 
 # ---------- Быстрое удаление фона в отдельном потоке ----------
 async def fast_remove(data: bytes) -> bytes:
-    return await asyncio.to_thread(remove, data, session=session)
+    return await asyncio.to_thread(remove, data)
 
 
 # ---------- Старт ----------
